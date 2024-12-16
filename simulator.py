@@ -3,6 +3,7 @@ import os
 import numpy as np
 import sys
 import time
+import threading
 
 frame = 0
 debug = False
@@ -153,34 +154,58 @@ class SimulatorDriver:
         x_crash = (biggest_x > self.max_x_box) or (smallest_x < self.min_x_box)
         y_crash = (biggest_y > self.max_y_box) or (smallest_y < self.min_y_box)
         return (x_crash or y_crash)
+    
+    def left_motor(self, velocity):
+        self.left_motor_velocity = velocity
+    
+    def right_motor(self, velocity):
+        self.right_motor_velocity = velocity
 
-    def motors(self, left, right, seconds):
-        # power (+ / -) to left and right motors
-        # number of seconds to maintain that
+    def update(self):
+        # Basic update logic for robot movement based on motor velocities
+        # You can refine this to simulate more accurate movement
+        if self.right_motor_velocity == 1 and self.left_motor_velocity == -1:
+            self.heading = (self.heading - 1) % 360
+        elif self.right_motor_velocity == -1 and self.left_motor_velocity == 1:
+            self.heading = (self.heading + 1) % 360
+        elif self.right_motor_velocity == self.left_motor_velocity:
+            if self.right_motor_velocity != 0:
+                # go forward in direction of heading
+                speed = self.right_motor_velocity * 1
+                self.x += speed * np.cos(np.radians(self.heading))
+                self.y -= speed * np.sin(np.radians(self.heading))
 
-        degrees_per_frame = 0.98
+    def motors(self, left, right):
+        self.left_motor(left)
+        self.right_motor(right)
 
-        # for a certain number of seconds:
-        for _ in range(round(seconds * self.fps)):
-            # update position
-            if right == 1 and left == -1:
-                self.heading = (self.heading - degrees_per_frame) % 360
-            elif right == -1 and left == 1:
-                self.heading = (self.heading + degrees_per_frame) % 360
-            elif right == left:
-                if right == 0:
-                    pass
-                else:
-                    speed = right * 1
-                    self.x += speed * np.cos(np.radians(self.heading))
-                    self.y -= speed * np.sin(np.radians(self.heading))
-            else:
-                raise Exception("Ooops! Dr. Ebee didn't write code that let's you use those numbers as input to the `motors` function. If you *really* want those numbers, schedule some time on her calendar to help her implement that change!!")
+    # def motors(self, left, right, seconds):
+    #     # power (+ / -) to left and right motors
+    #     # number of seconds to maintain that
 
-            if self.detect_crash():
-                raise Exception("Ooops! Dr. Ebee doesn't know how to simulate what happens when you hit the walls. Also, it's not good for the robot anyway. Try again!!")
+    #     degrees_per_frame = 0.98
+
+    #     # for a certain number of seconds:
+    #     for _ in range(round(seconds * self.fps)):
+    #         # update position
+    #         if right == 1 and left == -1:
+    #             self.heading = (self.heading - degrees_per_frame) % 360
+    #         elif right == -1 and left == 1:
+    #             self.heading = (self.heading + degrees_per_frame) % 360
+    #         elif right == left:
+    #             if right == 0:
+    #                 pass
+    #             else:
+    #                 speed = right * 1
+    #                 self.x += speed * np.cos(np.radians(self.heading))
+    #                 self.y -= speed * np.sin(np.radians(self.heading))
+    #         else:
+    #             raise Exception("Ooops! Dr. Ebee didn't write code that let's you use those numbers as input to the `motors` function. If you *really* want those numbers, schedule some time on her calendar to help her implement that change!!")
+
+    #         if self.detect_crash():
+    #             raise Exception("Ooops! Dr. Ebee doesn't know how to simulate what happens when you hit the walls. Also, it's not good for the robot anyway. Try again!!")
             
-            self.render()
+    #         self.render()
     
     def dist_to_box(self, sonar_position, h):
         # from sonar position, draw a line in direction heading, and find distance to nearest edge of box
@@ -284,13 +309,37 @@ class SimulatorDriver:
         pygame.display.quit()
         pygame.quit()
         sys.exit()
+    
+    def run_simulation(self):
+        # Start the Pygame rendering loop
+        running = True
+        clock = pygame.time.Clock()
+        while running:
+            # Check for quitting the Pygame window
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+            
+            # Update the robot state
+            self.update()
+
+            # Render the robot in the window
+            self.render(self.screen)
+
+            # Cap the frame rate to 60 FPS
+            clock.tick(60)
+
+        pygame.quit()
         
     def start_simulation(self):
         # Initialize the Pygame window
         pygame.init()
         self.screen = pygame.display.set_mode((600, 400))
         pygame.display.set_caption("Robot Simulator")
-        self.render()
+
+        # Start the simulation in a separate thread or process
+        threading.Thread(target=self.run_simulation, daemon=True).start()
+        
 
 mode = input("Do you want to run the real robot (r) or the simulator (s)?")
 if mode == "r":

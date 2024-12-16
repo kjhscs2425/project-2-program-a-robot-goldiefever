@@ -1,12 +1,12 @@
 # Import the robot control commands from the library
 from simulator import robot
 from time import *
+# import matplotlib
+# matplotlib.use("macOSX")
 
 # left, right = robot.sonars()
 
-def spin(spin_direction,spin_duration):
-    spin_direction = input("do you want to spin left (L) or right (R)? ")
-    spin_duration = float(input("how long do you want to spin for? "))
+def spin(spin_direction, spin_duration):
     if spin_direction == "r" or spin_direction == "R" or spin_direction == "right" or spin_direction == "Right":
         robot.motors(-1, 1, spin_duration)
     if spin_direction == "l" or spin_direction == "L" or spin_direction == "left" or spin_direction == "Left":
@@ -69,9 +69,12 @@ def stay():
     move()
 
 def move():
-    hi = input("Hi! I'm robobunny. What would you like me to do? I can spin, turn90, dance, drive, or stay \n")
+    hi = input("Hi! I'm robobunny. What would you like me to do? I can spin, turn90, dance(before you run this, make sure you are in the middle of the box), drive, or stay \n")
+
     if hi == str("spin"):
-        spin()
+        spin_direction = input("do you want to spin left (L) or right (R)? ")
+        spin_duration = float(input("how long do you want to spin for? "))
+        spin(spin_direction,spin_duration)
     if hi == str("turn90"):
         turn90()
     if hi == str("dance"):
@@ -88,10 +91,110 @@ move()
 
 # def play_snake(position):
 #     new_position=position
-#     position_angle=90 or position_angle=-90 or position_angle=180 or position_angle=-180
+    # position_angle==90 or position_angle==-90 or position_angle==180 or position_angle=0
+
+# def turn_1(position):
+#         if input == ("w"):
+#             if direction == 90:
+#                 wait
+#             elif direction == right:
+#                 w
+
+#     if position_angle==90:
         
 #     return new_postition
+# else:
+#     go(posit
+       
+# def go(position):
+#     new_position=position
+#     instructions = "you can press wasd to go in different directions"
+#     wasd = input(instructions)
+#     if wasd == w:
+#         w(position)
+#     if wasd == a:
+#         a(position)
+#     if wasd == s:
+#         s(position)
+#     if wasd == d:
+#         d(position)
 
+# def turn_right(position):
+#     robot.motors(-1, 1, (90/58.8))
+#     go(position)
+
+# def turn_left(position):
+#     robot.motors(1, -1, (90/58.8))
+#     go(position)
+
+# def w(position):
+#     #90 degrees
+#     if position==90:
+#         w(position)
+#         new_position=90
+#     if position==0:
+#         turn_left(position)
+#         new_position=90
+#     if position==180:
+#         turn_right(position)
+#         new_position=90
+#     if position==-90:
+#         w(position)
+        
+# def a(position):
+#     #180 degrees
+#     if position==90:
+#         turn_left(position)
+#         new_position=180
+#     if position==0:
+#         a(position)
+#     if position==180:
+#         a(position)
+#     if position==-90:
+#         turn_right(position)
+#         new_position=180
+
+# def s(position):
+#     #-90 degrees
+#     if position==90:
+#         s(position)
+#     if position==0:
+#         turn_right(position)
+#         new_position=-90
+#     if position==180:
+#         turn_left(position)
+#         new_position=180
+#     if position==-90:
+#         s(position)
+
+# def d(position):
+#     #0 degrees
+#     if position==90:
+#         turn_right()
+#         new_position=0
+#     if position==0:
+#         d(position)
+#     if position==180:
+#         d(position)
+#     if position==-90:
+#         turn_left(position)
+
+
+# def begin(position):
+#     hi=input("hi, we're going to play snake! press space to begin.")
+#     if hi == ("m"):
+#         go(position)
+#     else:
+#         begin(position)
+
+# begin(0)
+
+    # def turn90():
+#     turn_direction = input("do you want to turn left (L) or right (R)? ")
+#     if turn_direction == "r" or turn_direction == "R" or turn_direction == "right" or turn_direction == "Right":
+#         robot.motors(-1, 1, (90/58.8))
+#     if turn_direction == "l" or turn_direction == "L:" or turn_direction == "left" or turn_direction == "Left":
+#         robot.motors(1, -1, (90/58.8))
            
 
 
